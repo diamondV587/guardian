@@ -22,13 +22,13 @@
 						<view class="item-cell">
 							<label class="title">localName:</label> {{item.localName}}
 						</view>
-						<view>
+						<view class="item-cell">
 							<label class="title">Service数量:</label>{{item.advertisServiceUUIDs ? (item.advertisServiceUUIDs.length || 0) : 0}}
 						</view>
 					</view>
 					<view class="item-right-wrapper">
-						<button type="warn" class="mini-btn" size="mini" @tap="closeServices" v-if="item.deviceId === deviceId">关闭连接</button>
-						<button type="primary" class="mini-btn" size="mini" :data-deviceId="item.deviceId" @tap="toServicesList" v-else>打开连接</button>
+						<button class="mini-btn" type="primary" size="mini" :data-deviceid="item.deviceId" v-if="deviceId != item.deviceId" @tap="toServicesList">连接蓝牙</button>
+						<button class="mini-btn" type="warn" size="mini" v-else @tap="closeServices">断开蓝牙</button>
 					</view>
 				</view>
 			</view>

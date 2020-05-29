@@ -7,21 +7,6 @@
 			<button class="mini-btn" type="default" size="mini" v-if="!character.isOpenNotify" @tap="openNotify">开启notify</button>
 			<button class="mini-btn" type="primary" size="mini" v-if="character.isOpenNotify" @tap="closeNotify">关闭notify</button>
 		</view>
-		<view class="response-text" v-if="showEquipmentBox && responseInfoArray.length !== 0">
-			<view class="res-item" v-for="(item,index) in responseInfoArray">
-				<view class="res-left-item">
-					<view class="res-line-item">
-						<text>address:</text>{{item.address}}
-					</view>
-					<view class="res-line-item">
-						<text>name:</text>{{item.name}}
-					</view>
-				</view>
-				<view class="res-right-item" @tap="addnode">
-					添加
-				</view>
-			</view>
-		</view>
 	</view>
 </template>
 
@@ -104,6 +89,7 @@
 							if(protocl.toLowerCase() == 'ffff') {
 								let dr = originalStr
 								let result = JSON.parse(dr);
+								console.log(JSON.stringify(result))
 								self.$emit('findnodelist', result)
 							}
 						}

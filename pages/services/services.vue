@@ -17,15 +17,14 @@
 				</view>
 			</uni-collapse-item>
 		</uni-collapse>
-		
-		<wuc-tab :tab-list="tabList" :tabCur.sync="TabCur" @change="tabChange"></wuc-tab>
-		<swiper :current="TabCur" duration="300" @change="swiperChange">
-		  <swiper-item key="0">
-		    <div>监听设备</div>
-		  </swiper-item>
-			<swiper-item key="1">
-				<scroll-view v-if="nodelist.length !== 0">
-					<view class="node-item" v-for="(nodeitem, index) in nodelist">
+		<view class="tabs" v-if="showTabs">
+			<navTab ref="navTab" :tabTitle="tabTitle" @changeTab='changeTab'></navTab>
+			<template v-if="currentTab == 0">
+				<view v-for="(finditem, findex) in findlist"> {{ finditem.node }} - {{finditem.rssi}}</view>
+			</template>
+			<template v-if="currentTab == 1">
+				<scroll-view class="node-view" v-if="nodelist.length !== 0">
+					<view class="node-item" v-for="(nodeitem, index) in nodelist" :key="index">
 						<view class="node-left-item">
 							<view class="name">
 								<text>name:</text>{{nodeitem.name}}
@@ -39,12 +38,10 @@
 						</view>
 					</view>
 				</scroll-view>
-			</swiper-item>
-		</swiper>
-		
+			</template>
+		</view>
 		<view class="button-sp-area">
-			<button class="mini-btn" type="primary" size="mini" @click="addNode">添加节点</button>
-			<button class="mini-btn" type="primary" size="mini" @click="deleteNode">删除节点</button>
+			<button class="mini-btn" type="primary" size="mini" @click="hideTabMoal">显示服务</button>
 			<button class="mini-btn" type="primary" size="mini" @click="getNodeInfo">获取设备列表</button>
 		</view>
 	</view>
@@ -57,9 +54,7 @@
 	import uniCollapse from '@/components/uni-collapse/uni-collapse.vue'
 	import uniCollapseItem from '@/components/uni-collapse-item/uni-collapse-item.vue';
 	import characterItem from './childcompus/characterItem.vue'
-	import WucTab from '@/components/wuc-tab/wuc-tab.vue';
-	
-	import { mapState, mapMutiaions } from 'vuex'
+	import navTab from '@/components/common/navTab.vue'
 	
 	export default {
 		data() {
@@ -68,18 +63,19 @@
 				serviceList: [],
 				characteristics:[],
 				responseText:'',
-				responseArray: [],
+				findlist: [],
 				nodelist:[],
 				listen: false,
-				TabCur: 0,
-				tabList: [{ name: '搜索节点' }, { name: '节点列表' }]
+				showTabs: false,
+				currentTab: 0,
+				tabTitle:['搜索信息','节点列表']
 			}
 		},
 		components: {
 			uniCollapse,
 			uniCollapseItem,
 			characterItem,
-			WucTab 
+			navTab 
 		},
 		async onLoad(option) {
 			this.deviceid = option.deviceId;
@@ -99,9 +95,8 @@
 			}
 		},
 		methods: {
-			...mapMutiaions(['setnodelist']),
-			tabChange(index) {
-				this.TabCur = index;
+			changeTab(index){
+				this.currentTab = index;
 			},
 			swiperChange() {
 				
@@ -161,6 +156,14 @@
 				this.printbuff(buffer)
 			},
 			
+			showTabMoal() {
+				this.showTabs = true;
+			},
+			
+			hideTabMoal() {
+				this.showTabs = false;
+			},
+			
 			deleteNode() {
 				let str = {"cmd": 2,"address": "68:0a:e2:ef:41:03", "action": 65}
 				bluetooth.notifyId = '78725B2A-8A17-408F-B634-50F2BA726950'
@@ -178,15 +181,23 @@
 			},
 			showNodeList (list) {
 				this.nodelist = list;
-				this.setnodelist();
-				console.dir(this.$store)
+				this.showTabMoal()
 			},
 			addEquipment(response) {
 				let result = true;
 				
 			},
-			findnodelist () {
-				
+			findnodelist (result) {
+				if(!this.nodelist.some(item => {
+					return item.address == result.node
+				})) {
+					let index = this.findlist.findIndex(item => item.node == result.node);
+					if(index == -1) {
+						this.findlist.push(result)
+					} else {
+						this.findlist.splice(index,1,result);
+					}
+				} 
 			}
 		}
 	}
@@ -224,5 +235,20 @@
 	
 	.scroll-view_H {
 		max-height: 400rpx;
+	}
+	.node-view {
+		display: block;
+		width: 100%;
+		min-height: 400rpx;
+	}
+	.tabs {
+		position: absolute;
+		top: 0;
+		width: 100%;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 9;
+		background-color: #F0F0F0;
 	}
 </style>
