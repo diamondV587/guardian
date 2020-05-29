@@ -1,0 +1,21 @@
+{
+	"pages": [{
+		"path": "pages/index/index",
+		"style": {}
+		}   
+        ,{
+            "path" : "pages/services/services",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/node/node",
+            "style" : {}
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "守护者系统参数配置",
+		"navigationBarBackgroundColor": "#007AFF",
+		"backgroundColor": "#FFFFFF"
+	}
+}
